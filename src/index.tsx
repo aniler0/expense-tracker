@@ -5,9 +5,9 @@ import { Provider } from "react-redux";
 import "antd/dist/antd.css";
 
 import App from "./App";
-import rootReducers from "./store";
+import rootReducer from "./store";
 
-const store = createStore(rootReducers, applyMiddleware(thunk));
+const store = createStore(rootReducer, applyMiddleware(thunk));
 
 ReactDOM.render(
   <Provider store={store}>

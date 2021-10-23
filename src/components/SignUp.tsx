@@ -1,7 +1,8 @@
 import React from "react";
-import { Form, Input, Button, message, Space } from "antd";
+import { Form, Input, Button, message } from "antd";
 import { useHistory } from "react-router-dom";
 import api from "../utils/api";
+import showError from "../utils/showError";
 
 const SignUp = () => {
   const history = useHistory();
@@ -23,14 +24,11 @@ const SignUp = () => {
       range: "${label} must be between ${min} and ${max}",
     },
   };
-  const showError = (errorMessage: string) => {
-    message.error(errorMessage);
-  };
 
   const onFinish = async (values: any) => {
     try {
       await api.post("/users/register", values);
-      history.push("/login");
+      history.push("/login", { newSignUp: true }); //bu objeyi login componentine bildir
     } catch (error) {
       console.log({ error });
       showError((error as any).response.data.errorMessage);

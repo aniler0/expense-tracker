@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Form, Select, Button, Input, Modal, Table, Tag } from "antd";
-import { Category, CategoryForm } from "../types/category";
-import { addCategory, getCategories } from "../store/actions/categoryActions";
-import { useDispatch, useSelector } from "react-redux";
-import { AppState } from "../store";
+import { Form, Select, Button, Input, Modal, Table, Tag, Space } from "antd";
 import { SketchPicker } from "react-color";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { useDispatch, useSelector } from "react-redux";
+import { Category, CategoryForm } from "../types/category";
+import {
+  addCategory,
+  deleteCategory,
+  getCategories,
+  updateCategory,
+} from "../store/actions/categoryActions";
+import { AppState } from "../store";
 
-type Mode = "new" | "edit";
+type Mode = "new" | "edit" | "delete";
 
 const emptyForm: CategoryForm = {
   name: "",
@@ -18,6 +24,8 @@ const Categories = () => {
   const [mode, setMode] = useState<Mode>("edit");
   const [form, setForm] = useState<CategoryForm>(emptyForm);
   const dispatch = useDispatch();
+  const [updateId, setUpdateId] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>();
   const { data, loading, error } = useSelector(
     (state: AppState) => state.categories
   );
@@ -33,16 +41,23 @@ const Categories = () => {
 
   const handleOk = () => {
     //Mode değerine göre create or update action creator fonksiyonu çağır.
-    dispatch(addCategory(form));
+    if (mode === "new") dispatch(addCategory(form));
+    else if (mode === "edit" && typeof updateId === "number")
+      dispatch(updateCategory(form, updateId));
+    else if (mode === "delete" && typeof deleteId === "number")
+      dispatch(deleteCategory(deleteId));
     setIsModalVisible(false);
     setMode("new");
     setForm(emptyForm);
+    setUpdateId(null);
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
     setMode("new");
     setForm(emptyForm);
+    setUpdateId(null);
+    setDeleteId(null);
   };
   const columns = [
     {
@@ -59,60 +74,90 @@ const Categories = () => {
       },
     },
 
-    // {
-    //   title: "Action",
-    //   key: "action",
-    //   render: (text, record) => (
-    //     <Space size="middle">
-    //       <a>Invite {record.name}</a>
-    //       <a>Delete</a>
-    //     </Space>
-    //   ),
-    // },
+    {
+      title: "Action",
+      key: "action",
+      render: (text: string, category: Category) => (
+        <Space size="middle">
+          <EditOutlined
+            style={{ color: "darkblue" }}
+            onClick={() => {
+              showModal("edit");
+              setForm(category);
+              setUpdateId(category.id);
+            }}
+          />
+          <DeleteOutlined
+            style={{ color: "maroon" }}
+            onClick={() => {
+              showModal("delete");
+              setDeleteId(category.id);
+            }}
+          />
+        </Space>
+      ),
+    },
   ];
 
   return (
     <React.Fragment>
-      <div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          marginBottom: "10px",
+        }}
+      >
         <Button type="primary" onClick={() => showModal("new")}>
           New Category
         </Button>
 
         <Modal
-          title={mode === "new" ? "Create New Category" : "Update Category"}
+          title={
+            mode === "new"
+              ? "Create New Category"
+              : mode === "edit"
+              ? "Update Category"
+              : "Delete Category"
+          }
           visible={isModalVisible}
           onOk={handleOk}
           onCancel={handleCancel}
-          okButtonProps={{ disabled: !form.name }}
+          okButtonProps={{ disabled: !(mode === "delete") && !form.name }}
         >
-          <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
-            <Form.Item label="Category Name" required>
-              <Input
-                name="name"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-              />
-            </Form.Item>
-            <Form.Item label="Category Type">
-              <Select
-                defaultValue="expense"
-                onChange={(type) => setForm({ ...form, type })}
-              >
-                <Select.Option value="income">Income</Select.Option>
-                <Select.Option value="expense">Expense</Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item label="Color">
-              <SketchPicker
-                color={form.color}
-                onChange={(color) => setForm({ ...form, color: color.hex })}
-              />
-            </Form.Item>
-          </Form>
+          {mode === "edit" || mode === "new" ? (
+            <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
+              <Form.Item label="Category Name" required>
+                <Input
+                  name="name"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                />
+              </Form.Item>
+              <Form.Item label="Category Type">
+                <Select
+                  defaultValue="expense"
+                  value={form.type}
+                  onChange={(type) => setForm({ ...form, type })}
+                >
+                  <Select.Option value="income">Income</Select.Option>
+                  <Select.Option value="expense">Expense</Select.Option>
+                </Select>
+              </Form.Item>
+              <Form.Item label="Color">
+                <SketchPicker
+                  color={form.color}
+                  onChange={(color) => setForm({ ...form, color: color.hex })}
+                />
+              </Form.Item>
+            </Form>
+          ) : mode === "delete" ? (
+            <>Are you sure ? </>
+          ) : null}
         </Modal>
       </div>
 
-      <Table columns={columns} dataSource={data} />
+      <Table loading={loading} columns={columns} dataSource={data} />
     </React.Fragment>
   );
 };

@@ -20,16 +20,14 @@ const emptyForm: CategoryForm = {
   color: "black",
 };
 const Categories = () => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [mode, setMode] = useState<Mode>("edit");
-  const [form, setForm] = useState<CategoryForm>(emptyForm);
-  const dispatch = useDispatch();
-  const [updateId, setUpdateId] = useState<number | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false); //sets modal visible or invisible
+  const [mode, setMode] = useState<Mode>("edit"); //sets mode to call the function which is same name with state
+  const [form, setForm] = useState<CategoryForm>(emptyForm); //sets form
+  const [updateId, setUpdateId] = useState<number | null>(null); //
   const [deleteId, setDeleteId] = useState<number | null>();
-  const { data, loading, error } = useSelector(
-    (state: AppState) => state.categories
-  );
-  console.log({ data, loading, error });
+  const dispatch = useDispatch();
+  const { data, loading } = useSelector((state: AppState) => state.categories);
+
   useEffect(() => {
     dispatch(getCategories());
   }, []);

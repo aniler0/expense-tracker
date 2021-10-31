@@ -11,8 +11,7 @@ import {
   updateCategory,
 } from "../store/actions/categoryActions";
 import { AppState } from "../store";
-
-type Mode = "new" | "edit" | "delete";
+import { Mode } from "../types/general";
 
 const emptyForm: CategoryForm = {
   name: "",
@@ -99,17 +98,18 @@ const Categories = () => {
 
   return (
     <React.Fragment>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          marginBottom: "10px",
-        }}
-      >
-        <Button type="primary" onClick={() => showModal("new")}>
-          New Category
-        </Button>
-
+      <div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginBottom: "10px",
+          }}
+        >
+          <Button type="primary" onClick={() => showModal("new")}>
+            New Category
+          </Button>
+        </div>
         <Modal
           title={
             mode === "new"

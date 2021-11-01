@@ -3,7 +3,12 @@ import { Form, Select, Button, Input, Modal, Table, Tag, Space } from "antd";
 import { AppState } from "../store";
 import { Record, RecordForm } from "../types/record";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { addRecord, getRecords } from "../store/actions/recordActions";
+import {
+  addRecord,
+  deleteRecord,
+  getRecords,
+  updateRecord,
+} from "../store/actions/recordActions";
 import React, { useEffect, useState } from "react";
 import { Category } from "../types/category";
 import { Mode } from "../types/general";
@@ -42,10 +47,11 @@ const Records = () => {
   const handleOk = () => {
     //Mode değerine göre create or update action creator fonksiyonu çağır.
     if (mode === "new") dispatch(addRecord(form));
-    //   else if (mode === "edit" && typeof updateId === "number")
-    //     dispatch(updateRecord(form, updateId));
-    //   else if (mode === "delete" && typeof deleteId === "number")
-    //     dispatch(deleteRecord(deleteId));
+    else if (mode === "edit" && typeof updateId === "number")
+      dispatch(updateRecord(form, updateId));
+    else if (mode === "delete" && typeof deleteId === "number")
+      dispatch(deleteRecord(deleteId));
+
     setIsModalVisible(false);
     setMode("new");
     setForm(emptyForm);
@@ -92,12 +98,30 @@ const Records = () => {
     {
       title: "Action",
       key: "action",
-      render: (text: string, record: Record) => (
-        <Space size="middle">
-          <EditOutlined style={{ color: "darkblue" }} onClick={() => {}} />
-          <DeleteOutlined style={{ color: "maroon" }} onClick={() => {}} />
-        </Space>
-      ),
+      render: (text: string, record: Record) => {
+        const { title, amount } = record;
+        const category_id = record.category.id;
+
+        return (
+          <Space size="middle">
+            <EditOutlined
+              style={{ color: "darkblue" }}
+              onClick={() => {
+                showModal("edit");
+                setForm({ title, amount, category_id });
+                setUpdateId(record.id);
+              }}
+            />
+            <DeleteOutlined
+              style={{ color: "maroon" }}
+              onClick={() => {
+                showModal("delete");
+                setDeleteId(record.id);
+              }}
+            />
+          </Space>
+        );
+      },
     },
   ];
   useEffect(() => {
@@ -165,9 +189,9 @@ const Records = () => {
                   <Select.Option value={0} disabled>
                     Select a category
                   </Select.Option>
-                  {categories.map((category, key) => {
+                  {categories.map((category) => {
                     return (
-                      <Select.Option key={key} value={category.id}>
+                      <Select.Option key={category.id} value={category.id}>
                         {category.name}
                       </Select.Option>
                     );
@@ -180,7 +204,12 @@ const Records = () => {
           ) : null}
         </Modal>
       </div>
-      <Table loading={loading} columns={columns} dataSource={data} />
+      <Table
+        loading={loading}
+        columns={columns}
+        dataSource={data}
+        rowKey="key"
+      />
     </React.Fragment>
   );
 };

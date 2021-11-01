@@ -1,5 +1,4 @@
-import React from "react";
-import { Form, Input, Button, message } from "antd";
+import { Form, Input, Button } from "antd";
 import { useHistory } from "react-router-dom";
 import api from "../utils/api";
 import showError from "../utils/showError";
@@ -27,7 +26,7 @@ const SignUp = () => {
 
   const onFinish = async (values: any) => {
     try {
-      await api.post("/users/register", values);
+      await api().post("/users/register", values);
       history.push("/login", { newSignUp: true }); //bu objeyi login componentine bildir
     } catch (error) {
       console.log({ error });

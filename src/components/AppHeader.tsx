@@ -33,7 +33,9 @@ const AppHeader = () => {
             </Menu.Item>
           </>
         ) : loading ? null : (
-          <Menu.Item key="/login">Giriş</Menu.Item>
+          <Menu.Item key="/login">
+            <Link to="/logout">Giriş </Link>
+          </Menu.Item>
         )}
       </Menu>
     </Header>

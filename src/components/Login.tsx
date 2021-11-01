@@ -7,6 +7,7 @@ import { LoginForm } from "../types/user";
 import { login } from "../store/actions/userActions";
 import { AppState } from "../store";
 import showSuccess from "../utils/showSuccess";
+import { Link } from "react-router-dom";
 
 export const Login = () => {
   const history = useHistory();
@@ -73,6 +74,9 @@ export const Login = () => {
           Submit
         </Button>
       </Form.Item>
+      <h1 style={{ textAlign: "center", fontSize: "14px" }}>
+        If you don't have account <Link to="/register">Register</Link>
+      </h1>
     </Form>
   );
 };

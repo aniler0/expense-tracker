@@ -17,7 +17,6 @@ function App() {
         className="site-layout"
         style={{ padding: "50px", marginTop: 64 }}
       >
-        <h1>Eğer hesabınız yoksa giriş yapınız.</h1>
         <Route path="/register" component={SignUp} />
         <Route path="/login" component={Login} />
         <PrivateRoute path="/categories" component={Categories} />

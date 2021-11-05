@@ -21,20 +21,20 @@ const AppHeader = () => {
         {data.username ? (
           <>
             <Menu.Item key="/records">
-              <Link to="/records">Harcama Kayıtları </Link>
+              <Link to="/records">Expense Records</Link>
             </Menu.Item>
 
             <Menu.Item key="/categories">
-              <Link to="/categories">Kategori</Link>
+              <Link to="/categories">Category</Link>
             </Menu.Item>
 
             <Menu.Item key="/logout">
-              <Link to="/logout">Çıkış </Link>
+              <Link to="/logout">Logout</Link>
             </Menu.Item>
           </>
         ) : loading ? null : (
           <Menu.Item key="/login">
-            <Link to="/logout">Giriş </Link>
+            <Link to="/logout">Login</Link>
           </Menu.Item>
         )}
       </Menu>
